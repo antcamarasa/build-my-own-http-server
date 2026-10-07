@@ -1,4 +1,4 @@
-# build-my-owm-http-server
+# build-my-own-http-server
 
 This is a living repository I use to deeply learn backend development by building as many layers as possible from scratch, to understand what frameworks usually hide.
 
