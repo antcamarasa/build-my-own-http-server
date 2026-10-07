@@ -1,5 +1,6 @@
 package org.httpserver.http.routeur;
 
+import org.httpserver.http.httpConstant.RouteHandler;
 import org.httpserver.http.httpConstant.deprecated.Handler;
 import org.httpserver.http.httpConstant.Verb;
 
@@ -10,7 +11,6 @@ public class Routeur {
         Reflection -> un routeur est unique dans tous mon projet donc, pour éviter d'en créer plusieurs singleton ?
         Un routeur est une classe qui contient un registre.
     */
-
     static Routeur routeur;
     Register register;
 
@@ -28,12 +28,12 @@ public class Routeur {
     public void addRoute(Route route){
         this.register.addRoute(route);
     }
-
-    public Handler getHandler(Verb verb, String path){
-        return register.containsRoute(verb, path);
-    }
     public List<Route> getAllRoutes(){return this.register.getRoutes();}
     public Register getRegister(){
         return this.register;
+    }
+
+    public RouteHandler getHandler(Verb verb, String path){
+        return register.containsRoute(verb, path);
     }
 }

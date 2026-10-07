@@ -1,5 +1,6 @@
 package org.httpserver.http.routeur;
 
+import org.httpserver.http.httpConstant.RouteHandler;
 import org.httpserver.http.httpConstant.deprecated.Handler;
 import org.httpserver.http.httpConstant.Verb;
 
@@ -20,7 +21,7 @@ public class Register {
 
     // _____________________________________
     // _______________________ Working logic
-    public Handler containsRoute(Verb verb, String path){
+    public RouteHandler containsRoute(Verb verb, String path){
         for(Route route : routes){
             if(route.getVerb().equals(verb) && route.getPath().equals(path)){
                 return route.getHandler();

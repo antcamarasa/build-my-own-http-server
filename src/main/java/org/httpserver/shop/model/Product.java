@@ -8,7 +8,8 @@ public class Product {
     BigDecimal price;
     Category category;
 
-    public Product(String name, BigDecimal price, Category category){
+    public Product(Integer id, String name, BigDecimal price, Category category){
+        this.id       = id;
         this.name     = name;
         this.price    = price;
         this.category = category;

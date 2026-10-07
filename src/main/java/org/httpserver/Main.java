@@ -27,7 +27,7 @@ public class Main {
     private static Routeur createRouteur(){
         List<Route> routes = List.of(
             new Route(Verb.GET, "/categories/", RouteHandler.LIST_ALL_CATEGORIES),
-            new Route(Verb.GET, "/categories/{category}", RouteHandler.LIST_ALL_CATEGORIES)
+            new Route(Verb.GET, "/categories/{category}", RouteHandler.LIST_ALL_BY_CATEGORY_NAME)
         );
 
         return Routeur.createSingletonRouteur(new Register(routes));

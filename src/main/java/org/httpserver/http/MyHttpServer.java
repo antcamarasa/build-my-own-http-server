@@ -1,7 +1,7 @@
 package org.httpserver.http;
 
+import org.httpserver.http.httpConstant.DynamicParam;
 import org.httpserver.http.httpConstant.RouteHandler;
-import org.httpserver.http.httpConstant.deprecated.Handler;
 import org.httpserver.http.httpConstant.SegmentStatus;
 import org.httpserver.http.httpConstant.Verb;
 import org.httpserver.http.httpHelper.HelperFormHandler;
@@ -314,7 +314,6 @@ import java.util.*;
 
 
         public HelperFormHandler findRoutes3(MyHttpRequest httpRequest, List<Route> routes){
-            Map<String, String> handlerMapHelper = new HashMap<>();
 
            List<Route> filterRoute = routes
                    .stream()
@@ -323,22 +322,27 @@ import java.util.*;
                    .toList();
 
            if(filterRoute.isEmpty()) return null;
-           Route route = checkRoute(httpRequest.getPath().split("/"), filterRoute, handlerMapHelper);
-            return new HelperFormHandler(handlerMapHelper, route);
+           return checkRouteAndReturnHelperForHandler(httpRequest.getPath().split("/"), filterRoute);
         }
 
-        private Route checkRoute(String[] path, List<Route> routes, Map<String, String> handlerMapHelper){
+        private HelperFormHandler checkRouteAndReturnHelperForHandler(String[] path, List<Route> routes){
             boolean founded = true;
             Route foundRoute = null;
+            Map<DynamicParam, String> handlerMapHelper = new HashMap<>();
+
 
             for(Route route : routes){
                for(int i = 0; i < route.getMotif().length; i++){
                    // 1. Vérifie si le path est dynamic ou non.
                    if(route.getMotif()[i].segmentStatus() == SegmentStatus.FIXE){
-                       if(!route.getMotif()[i].value().equals(path[i])) {founded = false; break;}
+                       if(!route.getMotif()[i].value().equals(path[i])) {
+                           founded = false;
+                           handlerMapHelper = new HashMap<>();
+                           break;}
                    }
                    else {
-                       handlerMapHelper.put(route.getMotif()[i].value(), path[i]);
+                       DynamicParam dynamicParam = DynamicParam.getEnumFromValue(route.getMotif()[i].value());
+                       handlerMapHelper.put(dynamicParam, path[i]);
                    }
                }
                if(founded){
@@ -346,27 +350,11 @@ import java.util.*;
                    break;
                }
            }
-            return foundRoute;
+            return new HelperFormHandler(handlerMapHelper, foundRoute);
         }
 
         // _____________________________________________ BUILD RESPONSE ________________________________________________
         // Parser from httpResponse to octet.
-        public MyHttpResponse buildResponse(MyHttpRequest httpRequest){
-            // 1. Récupérer verb
-            Verb verb = Verb.getVerb(httpRequest.getMethod());
-
-            // 2. Récupérer path
-            String path = httpRequest.getPath();
-
-            if(verb == null && path == null){
-                return null;
-            }
-            Handler handler = routeur.getHandler(verb, path);
-            return handler.start(httpRequest);
-        }
-
-
-
     }
 
 

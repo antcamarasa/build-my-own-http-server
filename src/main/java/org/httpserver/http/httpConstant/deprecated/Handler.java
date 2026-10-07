@@ -20,7 +20,6 @@ public enum Handler {
     }
 
     // TODO Dessiner et retracer le chemin.
-    public MyHttpResponse start(MyHttpRequest request){
-        return this.handler.process(request);
+    public void start(MyHttpRequest request){
     }
 }
