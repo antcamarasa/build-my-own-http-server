@@ -14,22 +14,12 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         MyHttpServer httpServer = new MyHttpServer(8080);
-        Routeur routeur = createRouteur();
 
         try{
-            httpServer.start(routeur);
+            httpServer.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-    }
-
-    private static Routeur createRouteur(){
-        List<Route> routes = List.of(
-            new Route(Verb.GET, "/categories/", RouteHandler.LIST_ALL_CATEGORIES),
-            new Route(Verb.GET, "/categories/{category}", RouteHandler.LIST_ALL_BY_CATEGORY_NAME)
-        );
-
-        return Routeur.createSingletonRouteur(new Register(routes));
     }
 }

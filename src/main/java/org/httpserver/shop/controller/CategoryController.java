@@ -13,6 +13,12 @@ import java.util.Map;
 
 public class CategoryController {
 
+    // GET -> /category
+    public static MyHttpResponse getCategory(MyHttpRequest httpRequest, Map<DynamicParam, String> requestParam) throws SQLException {
+        CategoryService.findOne();
+        return null;
+    }
+
     // Get -> /categories
     public static MyHttpResponse all(MyHttpRequest httpRequest, Map<DynamicParam, String> requestParam) throws SQLException {
         CategoryService.findAll();
@@ -20,21 +26,33 @@ public class CategoryController {
     }
 
     // Get -> /category/{category}
-    public static MyHttpResponse getAllFromCategory(MyHttpRequest httpRequest, Map<DynamicParam, String> requestParam){
+    public static MyHttpResponse getAllProductOfCategory(MyHttpRequest httpRequest, Map<DynamicParam, String> requestParam) {
 
-        String categoryValue = requestParam.get(DynamicParam.CATEGORY);
+        // ID
+        String categoryId = requestParam.get(DynamicParam.CATEGORY_ID);
 
-        if(categoryValue == null  && categoryValue.isBlank()){
+        if(categoryId == null  && categoryId.isBlank()){
             // Erreur 400
             throw new RuntimeException("request param is null or empty");
         }
 
-        List<Product> products =  CategoryService.findProductsByCategoryName(categoryValue);
+        List<Product> products =  CategoryService.findProductsByCategoryId(categoryId);
+
+        // TODO : Parser json.
+        StringBuilder sb  = new StringBuilder();
+        sb.append('[');
         for(Product product : products){
-            System.out.println("Name : " + product.getName());
-            System.out.println("Prix : " + product.getPrice());
+            try {
+               String jsonObject = product.toJsonObject(product);
+               sb.append(jsonObject).append(',');
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-        // Construire la requête http.
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(']');
+
+        System.out.println("json : " + sb);
         return null;
     }
 }

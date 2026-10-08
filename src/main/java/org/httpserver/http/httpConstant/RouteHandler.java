@@ -9,6 +9,13 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 public enum RouteHandler {
+    LIST_CATEGORY((httpRequest, dynamicParamStringMap) -> {
+        try {
+            return CategoryController.getCategory(httpRequest, dynamicParamStringMap);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }),
     LIST_ALL_CATEGORIES((httpRequest, requestParam) -> {
         try {
             return CategoryController.all(httpRequest, requestParam);
@@ -16,7 +23,7 @@ public enum RouteHandler {
             throw new RuntimeException(e);
         }
     }),
-    LIST_ALL_BY_CATEGORY_NAME((httpRequest, requestParam) -> CategoryController.getAllFromCategory(httpRequest, requestParam));
+    LIST_ALL_PRODUCTS_OF_CATEGORY_ID(CategoryController::getAllProductOfCategory);
 
 
     final BiFunction<MyHttpRequest, Map<DynamicParam, String>, MyHttpResponse> customHandler;

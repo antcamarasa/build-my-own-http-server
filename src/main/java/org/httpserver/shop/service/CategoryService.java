@@ -10,24 +10,29 @@ import java.util.List;
 
 public class CategoryService {
 
-
-    public static MyHttpResponse findAll() throws SQLException {
+    public static List<Category> findOne()throws SQLException{
         CategoryRepository repository = new CategoryRepository();
         List<Category> result = repository.findAll();
-        return null;
+        return result;
     }
 
-    public static List<Product> findProductsByCategoryName(String categoryName) {
+    public static List<Category> findAll() throws SQLException {
+        CategoryRepository repository = new CategoryRepository();
+        List<Category> result = repository.findAll();
+        return result;
+    }
+
+    public static List<Product> findProductsByCategoryId(String categoryId) {
         CategoryRepository repository = new CategoryRepository();
 
         // 1. Vérifie si les params existes en BDD via repository.
-        boolean isValidCategoryName = repository.checkValidCategoryName(categoryName);
-        if (!isValidCategoryName) {
+        boolean isValidCategoryId = repository.checkValidCategoryName(Integer.parseInt(categoryId));
+        if (!isValidCategoryId) {
             // Requête bien formé, mais la category n'existe pas. 404.
             throw new RuntimeException("********* Invalid category name ***********");
         }
 
         // 2. Demander les données a la BDD, via CategoryRepository. je stock la réponse.
-        return repository.findAllByCategory(categoryName);
+        return repository.findAllByCategory(Integer.parseInt(categoryId));
     }
 }

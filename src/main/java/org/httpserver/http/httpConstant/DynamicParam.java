@@ -1,7 +1,7 @@
 package org.httpserver.http.httpConstant;
 
 public enum DynamicParam {
-    CATEGORY("category");
+    CATEGORY_ID("categoryId");
 
     String value;
     DynamicParam(String value){

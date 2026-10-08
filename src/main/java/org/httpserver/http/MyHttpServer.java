@@ -8,7 +8,9 @@ import org.httpserver.http.httpHelper.HelperFormHandler;
 import org.httpserver.http.request.MyHttpRequest;
 import org.httpserver.http.request.MyHttpRequestBuilder;
 import org.httpserver.http.response.MyHttpResponse;
+import org.httpserver.http.routeur.Register;
 import org.httpserver.http.routeur.Route;
+import org.httpserver.http.routeur.RouteConfig;
 import org.httpserver.http.routeur.Routeur;
 
 import java.io.IOException;
@@ -36,9 +38,9 @@ import java.util.*;
             this.port = port;
         }
 
-        public void start(Routeur routeur) throws IOException {
+        public void start() throws IOException {
             this.serverSocket = new ServerSocket(port);
-            this.routeur = routeur;
+            routeur = new RouteConfig().getRouteur();
             handleConnection();
         }
 
@@ -48,8 +50,7 @@ import java.util.*;
                 httpRequest   = buildRequest(socket);
 
                 // Contient un record, contenant la route et les param dynamic si existant.
-                HelperFormHandler handlerParam = findRoutes3(httpRequest, routeur.getAllRoutes());
-
+                HelperFormHandler handlerParam = routeur.findRoutes(httpRequest);
 
                 // Je récupère le handler lié a ma route.
                 RouteHandler handler = handlerParam.route().getHandler();
@@ -312,46 +313,6 @@ import java.util.*;
             return foundedRoute;
         }
 
-
-        public HelperFormHandler findRoutes3(MyHttpRequest httpRequest, List<Route> routes){
-
-           List<Route> filterRoute = routes
-                   .stream()
-                   .filter( route -> route.getVerb().equals(Verb.getVerb(httpRequest.getMethod())))
-                   .filter( route -> route.getMotif().length == httpRequest.getPath().split("/").length)
-                   .toList();
-
-           if(filterRoute.isEmpty()) return null;
-           return checkRouteAndReturnHelperForHandler(httpRequest.getPath().split("/"), filterRoute);
-        }
-
-        private HelperFormHandler checkRouteAndReturnHelperForHandler(String[] path, List<Route> routes){
-            boolean founded = true;
-            Route foundRoute = null;
-            Map<DynamicParam, String> handlerMapHelper = new HashMap<>();
-
-
-            for(Route route : routes){
-               for(int i = 0; i < route.getMotif().length; i++){
-                   // 1. Vérifie si le path est dynamic ou non.
-                   if(route.getMotif()[i].segmentStatus() == SegmentStatus.FIXE){
-                       if(!route.getMotif()[i].value().equals(path[i])) {
-                           founded = false;
-                           handlerMapHelper = new HashMap<>();
-                           break;}
-                   }
-                   else {
-                       DynamicParam dynamicParam = DynamicParam.getEnumFromValue(route.getMotif()[i].value());
-                       handlerMapHelper.put(dynamicParam, path[i]);
-                   }
-               }
-               if(founded){
-                   foundRoute = route;
-                   break;
-               }
-           }
-            return new HelperFormHandler(handlerMapHelper, foundRoute);
-        }
 
         // _____________________________________________ BUILD RESPONSE ________________________________________________
         // Parser from httpResponse to octet.

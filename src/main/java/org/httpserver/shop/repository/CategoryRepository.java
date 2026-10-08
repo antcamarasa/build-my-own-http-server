@@ -39,14 +39,14 @@ public class CategoryRepository {
         }
         return categoryList;
     }
-    public List<Product> findAllByCategory(String categoryName){
+    public List<Product>  findAllByCategory(Integer categoryId){
         List<Product> products = new ArrayList<>();
 
         try (Connection connection = database.getConnection();
              PreparedStatement ps = connection.prepareStatement(
-                     "SELECT p.id, p.name, p.price, c.id AS category_id, c.name AS category_name FROM product p INNER JOIN category c ON p.category_id = c.id WHERE c.name = ?");
+                     "SELECT p.id, p.name, p.price, c.id AS category_id, c.name AS category_name FROM product p INNER JOIN category c ON p.category_id = c.id WHERE c.id = ?");
         ){
-                ps.setString(1, categoryName);
+                ps.setInt(1, categoryId);
                 try(ResultSet rs = ps.executeQuery()){
                     while (rs.next()){
                         Category category = new Category(
@@ -70,19 +70,17 @@ public class CategoryRepository {
         return products;
     }
 
-
-
     // ______________________________________________ VALIDATION _______________________________________________________
-    public boolean checkValidCategoryName(String categoryName){
+    public boolean checkValidCategoryName(Integer categoryId){
         boolean isValidCategoryName  = false;
 
         try(Connection connection = database.getConnection();
-            PreparedStatement ps  = connection.prepareStatement("SELECT EXISTS(SELECT 1 from category where name = ?) AS category_exist")
+            PreparedStatement ps  = connection.prepareStatement("SELECT EXISTS(SELECT 1 FROM category WHERE id = ?) AS category_exists")
         ){
-            ps.setString(1, categoryName);
+            ps.setInt(1, categoryId);
             try(ResultSet rs = ps.executeQuery()){
                 while (rs.next()){
-                    isValidCategoryName = rs.getBoolean("category_exist");
+                    isValidCategoryName = rs.getBoolean("category_exists");
                 }
             }
 
